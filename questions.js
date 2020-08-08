@@ -1,40 +1,58 @@
 let $score = document.querySelector("#score");
 let $timer = document.querySelector("#timer");
-
 let $questionHere = document.querySelector("#questionHere");
 let $choicesHere = document.querySelector("#choicesHere");
-
+let $btn = document.querySelector("button");
+let $winnersList = document.querySelector(".winners-list");
 let $tryAgain = document.querySelector("#tryAgain");
 let $startQuiz = document.querySelector("#startQuiz");
-
 let score = 0;
-let timeLeft = 180;
+let timeLeft = 5;
+let randomQuestion;
 let thisQuestion = 0;
+let winners = [];
 
+$startQuiz.addEventListener("click", startGame);
 
-
-// start button to begin program
-$startQuiz.addEventListener("click", function () {
-  let gameClock = setInterval(countdown, 1000);
+function reset() {
+  timeLeft = 120;
+  thisQuestion = 0;
+  score = 0;
+  $tryAgain.innerHTML = "";
+  $btn.style.display = "none";
   $questionHere.textContent = "";
-  $startQuiz.style.display = "none";
-
-  countdown();
-  showQuestion();
-});
-
-function countdown() {
-  $timer.textContent = timeLeft + " seconds left";
-  timeLeft--;
-  if (timeLeft === 0) {
-    clearInterval(gameClock);
-  }
 }
 
-function showQuestion() {
+function setTime() {
+  var gameClock = setInterval(function () {
+    timeLeft--;
+    $timer.textContent = timeLeft + " seconds left";
+
+    if (timeLeft === 0) {
+      clearInterval(gameClock);
+      $timer.textContent = "";
+      $score.textContent = "";
+    }
+  }, 1000);
+}
+
+function startGame() {
+  reset();
+  setTime();
+
+  randomQuestion = questions.sort(() => Math.random() - 0.5);
+
+  goToNext();
+}
+
+function goToNext() {
   $choicesHere.innerHTML = "";
-  let questionContent = questions[thisQuestion].question;
-  $questionHere.textContent = questionContent;
+  showQuestion(randomQuestion[thisQuestion]);
+}
+
+function showQuestion(question) {
+  $questionHere.textContent = questions[thisQuestion].question;
+  $score.textContent = "score: " + score + "/10";
   let choicesArray = questions[thisQuestion].choices;
   var correctAnswer = questions[thisQuestion].answer;
   console.log(correctAnswer);
@@ -42,29 +60,38 @@ function showQuestion() {
   for (var i = 0; i < choicesArray.length; i++) {
     var $li = document.createElement("li");
     $li.textContent = choicesArray[i];
-
-    $li.addEventListener("click", function (event) {
-      var userChoice = event.target;
-      var userAnswer = userChoice.textContent;
-      checkAnswer(userAnswer, correctAnswer);
-    });
+    $li.addEventListener("click", checkAnswer);
     $choicesHere.appendChild($li);
   }
 }
 
-function checkAnswer(user, answer) {
-  if (user == answer) {
+function checkAnswer() {
+  var userChoice = event.target;
+  var userAnswer = userChoice.textContent;
+  var correctAnswer = questions[thisQuestion].answer;
+  thisQuestion++;
+
+  if (userAnswer == correctAnswer) {
     score++;
-    $score.textContent = "score: " + score + "/10";
+    console.log("flame-yo hotman");
   } else {
     timeLeft -= 10;
+    console.log("dishonor on your whole family");
   }
-  thisQuestion++;
-  console.log(thisQuestion);
-if (timeLeft > 0 && timeLeft <11) {
-    showQuestion();
-}
-  if (timeLeft > 0 && thisQuestion == 10) {
+  if (randomQuestion.length > thisQuestion && timeLeft > 0) {
+    goToNext();
+    console.log(thisQuestion);
+  } else if (randomQuestion.length > thisQuestion && timeLeft === 0) {
+    $questionHere.textContent = "";
+    $choicesHere.innerHTML = "";
+    $questionHere.textContent = "You did not complete this quiz.";
+    var btn = document.createElement("button");
+    btn.textContent = "Try again?";
+    $tryAgain.append(btn);
+    btn.addEventListener("click", startGame);
+  } else if ((thisQuestion = 9 && timeLeft > 0)) {
+    $timer.textContent = "";
+    $score.textContent = "";
     $questionHere.textContent = "";
     $choicesHere.innerHTML = "";
     $questionHere.textContent =
@@ -72,30 +99,28 @@ if (timeLeft > 0 && timeLeft <11) {
     var btn = document.createElement("button");
     btn.textContent = "Try again?";
     $tryAgain.append(btn);
-    btn.addEventListener("click", function (event) {
-      let gameClock = setInterval(countdown, 1000);
-      $questionHere.textContent = "";
-      $tryAgain.style.display = "none";
-    });
-  }
-
-  if (timeLeft == 0 && thisQuestion < 10) {
-    $questionHere.textContent = "";
-    $choicesHere.innerHTML = "";
-    $questionHere.textContent = "You did not complete this quiz.";
-    var btn = document.createElement("button");
-    btn.textContent = "Try again?";
-    $tryAgain.append(btn);
-    btn.addEventListener("click", function (event) {
-      let gameClock = setInterval(countdown, 1000);
-      $questionHere.textContent = "";
-      $tryAgain.style.display = "none";
-    });
+    btn.addEventListener("click", startGame);
+    highScores();
   }
 }
 
-// when game is over, stores high scores initials: score
+function highScores() {
+  $winnersList.textContent = "Add your score to the winner's list!";
+  var $yourNameHere = document.createElement("input");
+  $yourNameHere.placeholder = "Your initials here";
 
+  $yourNameHere.addEventListener("submit", function () {
+    event.preventDefault();
+
+    let userInput = $winnersList.nodeValue.trim();
+    if ($winnersList.length === 0) {
+      return;
+    }
+    userInput.push(winners);
+    $yourNameHere.value = "";
+    document.createElement("p");
+  });
+}
 
 let questions = [
   {
@@ -164,6 +189,6 @@ let questions = [
     question:
       "Which method is used to merge two or more arrays? This method does not change the existing arrays, but instead returns a new array.",
     choices: [".slice()", ".toString()", ".concat()", ".join()"],
-    answer: "concat",
+    answer: ".concat()",
   },
 ];

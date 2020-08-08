@@ -1,0 +1,57 @@
+body {
+    font-family: 'Raleway', sans-serif;
+    color: #04196A;
+}
+
+.container {
+    background-color: #D2DCFF;
+    border: #04196A 1px solid;
+}
+header {
+    background-color: #04196A;
+    color: white;
+}
+
+h1 {
+    font-family: 'Prompt', sans-serif;
+}
+
+button {
+    background-color: #0030D8;
+    border: none;
+    color: white;
+    padding: 10px;
+    margin: 2px;
+    border-radius: 30px;
+}
+
+button:hover {
+    background-color: #033AF8;
+}
+
+ul {
+    list-style: none;
+}
+
+li {
+    border-radius: 30px;
+    background-color: #0030D8;
+    border: none;
+    color: white;
+    padding: 10px;
+    margin: 2px;
+    width: 50%;
+    text-align: center;
+}
+
+li:hover {
+    background-color: #033AF8;
+}
+
+@media (max-width: 640px) {
+    .container {
+        width: 90%;
+        margin: 0;
+        
+    }
+}
