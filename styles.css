@@ -41,12 +41,19 @@ li {
     padding: 10px;
     margin: 2px;
     width: 50%;
-    text-align: center;
 }
 
 li:hover {
     background-color: #033AF8;
 }
+
+#initials {
+    margin: 10px;
+    border: 0px;
+    padding: 10px;
+
+}
+    
 
 @media (max-width: 640px) {
     .container {

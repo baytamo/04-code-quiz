@@ -3,26 +3,29 @@ let $timer = document.querySelector("#timer");
 let $questionHere = document.querySelector("#questionHere");
 let $choicesHere = document.querySelector("#choicesHere");
 let $btn = document.querySelector("button");
-let $winnersList = document.querySelector(".winners-list");
-let $tryAgain = document.querySelector("#tryAgain");
+let $winnersList = document.querySelector("#winners-list");
+let $tryButton = document.querySelector("#tryButton");
 let $startQuiz = document.querySelector("#startQuiz");
 let score = 0;
 let timeLeft = 5;
 let randomQuestion;
 let thisQuestion = 0;
-let winners = [];
+let scoreList = [];
 
+// event listener for start quiz and try again buttons
 $startQuiz.addEventListener("click", startGame);
 
+// clear text and clock from previous game
 function reset() {
   timeLeft = 120;
   thisQuestion = 0;
   score = 0;
-  $tryAgain.innerHTML = "";
+  $tryButton.innerHTML = "";
+  $winnersList.innerHTML = "";
   $btn.style.display = "none";
   $questionHere.textContent = "";
 }
-
+// set time interval
 function setTime() {
   var gameClock = setInterval(function () {
     timeLeft--;
@@ -35,7 +38,7 @@ function setTime() {
     }
   }, 1000);
 }
-
+// start game parameters: reset settings, begin clock, shuffle questions array, display first question
 function startGame() {
   reset();
   setTime();
@@ -45,18 +48,20 @@ function startGame() {
   goToNext();
 }
 
+// clears previous list of choices, shows next question
 function goToNext() {
   $choicesHere.innerHTML = "";
   showQuestion(randomQuestion[thisQuestion]);
 }
 
 function showQuestion(question) {
+  // choose question from shuffled array
   $questionHere.textContent = questions[thisQuestion].question;
   $score.textContent = "score: " + score + "/10";
   let choicesArray = questions[thisQuestion].choices;
   var correctAnswer = questions[thisQuestion].answer;
-  console.log(correctAnswer);
 
+  // for loop to display each value in choices array, adds event listener for each index
   for (var i = 0; i < choicesArray.length; i++) {
     var $li = document.createElement("li");
     $li.textContent = choicesArray[i];
@@ -65,6 +70,7 @@ function showQuestion(question) {
   }
 }
 
+// event listener that takes different action depending on which index user selected
 function checkAnswer() {
   var userChoice = event.target;
   var userAnswer = userChoice.textContent;
@@ -73,54 +79,94 @@ function checkAnswer() {
 
   if (userAnswer == correctAnswer) {
     score++;
-    console.log("flame-yo hotman");
   } else {
     timeLeft -= 10;
-    console.log("dishonor on your whole family");
   }
+  answerParameters();
+}
+
+// quiz will proceed with next question until all indexes are used
+function answerParameters() {
   if (randomQuestion.length > thisQuestion && timeLeft > 0) {
     goToNext();
-    console.log(thisQuestion);
-  } else if (randomQuestion.length > thisQuestion && timeLeft === 0) {
-    $questionHere.textContent = "";
+  }
+
+  // if there are questions left when the timer reaches 0 or no correct answers, user will receive this notification
+  if (randomQuestion.length > thisQuestion + 1 && timeLeft === 0) {
     $choicesHere.innerHTML = "";
     $questionHere.textContent = "You did not complete this quiz.";
-    var btn = document.createElement("button");
-    btn.textContent = "Try again?";
-    $tryAgain.append(btn);
-    btn.addEventListener("click", startGame);
-  } else if ((thisQuestion = 9 && timeLeft > 0)) {
-    $timer.textContent = "";
+    var $btn = document.createElement("button");
+    $btn.textContent = "Try again?";
+    $btn.setAttribute("id", "again");
+    $tryButton.appendChild($btn);
+    $tryButton.addEventListener("click", startGame);
+  }
+
+  // if user has answered correctly with time left, they will receive this notification
+  if (randomQuestion.length === thisQuestion + 1 && timeLeft > 0) {
     $score.textContent = "";
-    $questionHere.textContent = "";
+    $timer.textContent = "";
     $choicesHere.innerHTML = "";
     $questionHere.textContent =
       "You've completed the quiz! Your final score is " + score + "/10.";
-    var btn = document.createElement("button");
-    btn.textContent = "Try again?";
-    $tryAgain.append(btn);
-    btn.addEventListener("click", startGame);
+
+    // button created so that user may elect to take the quiz again
+    var $btn = document.createElement("button");
+    $btn.setAttribute("id", "again");
+    $btn.textContent = "Try again?";
+    $tryButton.appendChild($btn);
+    document.getElementById("again").addEventListener("click", startGame);
+
     highScores();
   }
 }
 
 function highScores() {
-  $winnersList.textContent = "Add your score to the winner's list!";
-  var $yourNameHere = document.createElement("input");
-  $yourNameHere.placeholder = "Your initials here";
+  // label for form created
+  var $label = document.createElement("label");
+  $label.setAttribute("for", "again");
+  $label.textContent = "Add yourself to the list of high scores";
+  $winnersList.appendChild($label);
 
-  $yourNameHere.addEventListener("submit", function () {
+  // input field created
+  var $inputInitials = document.createElement("input");
+  $inputInitials.placeholder = "Your initials here";
+  $inputInitials.setAttribute("id", "initials");
+  $winnersList.appendChild($inputInitials);
+
+  // event listener for input field
+  $winnersList.addEventListener("submit", function (event) {
     event.preventDefault();
-
-    let userInput = $winnersList.nodeValue.trim();
-    if ($winnersList.length === 0) {
+    let userInput = $inputInitials.value.trim();
+    console.log(userInput);
+    if (userInput.length === 0) {
       return;
     }
-    userInput.push(winners);
-    $yourNameHere.value = "";
-    document.createElement("p");
+
+    // records user initials and score and pushes into array
+    window.localStorage.setItem(userInput, score);
+    var tempList = window.localStorage.getItem(userInput, score);
+    JSON.stringify(tempList);
+    scoreList.push(tempList);
+    console.log(tempList);
+    
+    $inputInitials.value = "";
+
+    // score is shown as a list on page
+    var $listName = document.createElement("li");
+    $listName.textContent = userInput + "'s score - " + score + "/10";
+    $choicesHere.appendChild($listName);
   });
+
+  // will display the other high scores
+  for (var i = 0; i < scoreList; i++) {
+    var $listName = document.createElement("li");
+    $listName.textContent = scoreList;
+    $choicesHere.appendChild($listName);
+  }
 }
+
+
 
 let questions = [
   {

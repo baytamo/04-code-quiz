@@ -25,6 +25,7 @@
   <body>
     <!-- shows score, header, and time left -->
     <header class="row p-2">
+      <!-- row 1 starts here; stores score, title, and timer -->
       <div class="col-sm-3" id="score"></div>
 
       <div class="col-sm-6 d-flex justify-content-center">
@@ -34,24 +35,34 @@
       <div class="col-sm-3 d-flex justify-content-end" id="timer"></div>
     </header>
 
+    <!-- row 2 starts here; stores greeting, quiz content, input form and lists -->
     <div class="container m-4 p-2">
       <div class="row">
+        <!-- quiz questions -->
         <div class="col-sm-9 d-flex justify-content-center" id="questionHere">
           <h3>
             Test your Javascript knowledge by taking this quiz! You have two (2)
             minutes to complete the quiz.
           </h3>
         </div>
-        <div class="col-sm-3" id="spaceholder"></div>
+        <div class="col-sm-3 d-flex justify-content-end" id="spaceholder"></div>
       </div>
 
       <div class="row p-2">
-        <div class="col-sm-9"><form id="winners-list"><label id="addName"></label></form>
+        <!-- quiz choices -->
+        <div class="col-sm-9">
+          <form method="post" id="winners-list"></form>
           <ul id="choicesHere"></ul>
         </div>
-        <div class="col-sm-3 d-flex justify-content-end" id="tryAgain">
+
+        <div class="col-sm-3 d-flex justify-content-end spaceholder"></div>
+      </div>
+
+      <div class="row p-2">
+        <div class="col-sm-9"></div>
+        <!-- start button, try again button -->
+        <div class="col-sm-3 d-flex justify-content-end" id="tryButton">
           <button id="startQuiz">Start Quiz</button>
-          <!-- <button id="tryAgain" display="hide">Try Again?</button> -->
         </div>
       </div>
     </div>
