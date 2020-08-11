@@ -76,7 +76,10 @@ function showQuestion(question) {
   }
 
   // if there are questions left when the timer reaches 0 or no correct answers, user will receive this notification
-  if (randomQuestion.length > thisQuestion + 1 && timeLeft === 0) {
+  if (
+    (randomQuestion.length > thisQuestion + 1 && timeLeft === 0) ||
+    (randomQuestion.length === thisQuestion + 1 && score === 0)
+  ) {
     $choicesHere.innerHTML = "";
     $questionHere.textContent = "You did not complete this quiz.";
 
@@ -89,7 +92,7 @@ function showQuestion(question) {
   }
 
   // if user has answered correctly with time left, they will receive this notification
-  if (randomQuestion.length === thisQuestion + 1 && timeLeft > 0) {
+  if (randomQuestion.length === thisQuestion + 1 && timeLeft > 0 && score > 0) {
     $choicesHere.innerHTML = "";
     $questionHere.textContent =
       "You've completed the quiz! Your final score is " + score + "/10.";
@@ -139,6 +142,7 @@ function highScores() {
   $winnersList.addEventListener("submit", function (event) {
     event.preventDefault();
     let userName = $inputInitials.value.trim();
+    $inputInitials.setAttribute("disabled", true);
 
     if (userName.length === 0) {
       return;
@@ -149,27 +153,27 @@ function highScores() {
     // what will be shown when user submits info
     $choicesHere.textContent = "Top Scores";
     var $listName = document.createElement("li");
-    $listName.textContent = userName + "'s score - " + score + "/10";
+    $listName.textContent = userName + "'s score: " + score + "/10";
     $choicesHere.appendChild($listName);
-    
+
     // records user initials and score and pushes into array
-    localStorage.setItem("name", JSON.stringify(userName));
-    localStorage.setItem("score", JSON.stringify(score));
-
-    var BringBackMyNames = JSON.parse(localStorage.getItem("name"));
-    var BringBackMyScores = JSON.parse(localStorage.getItem("score"));
-
-    scoreList.push({BringBackMyNames, BringBackMyScores});
-    console.log(scoreList);
+    scoreList.push([userName, score]);
+    localStorage.setItem("scores", scoreList);
+   
 
     // will display the other high scores
-    for (var i = 0; i < scoreList; i++) {
+    for (var i = 0; i < scoreList.length -1 ; i++) {
+      
       var $listName = document.createElement("li");
-      $listName.textContent = scoreList[i];
-      console.log(scoreList[i].values);
+      $listName.textContent = scoreList[i][0] + "'s score: " + scoreList[i][1] + "/10";
+      localStorage.getItem("scores");
       $listName.setAttribute("data-index", i);
       $choicesHere.appendChild($listName);
     }
+    // scoreList array will only record latest 10 scores
+    if (scoreList.length === 5) {
+      scoreList.shift();
+  }
   });
 }
 
