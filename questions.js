@@ -97,7 +97,6 @@ function showQuestion(question) {
   $score.textContent = "score: " + score + "/10";
   let choicesArray = questions[thisQuestion].choices;
   var correctAnswer = questions[thisQuestion].answer;
-  console.log(correctAnswer);
 
   // for loop to display each value in choices array, adds event listener for each index
   for (var i = 0; i < choicesArray.length; i++) {
@@ -114,7 +113,6 @@ function checkAnswer() {
   var userAnswer = userChoice.textContent;
   var correctAnswer = questions[thisQuestion].answer;
   thisQuestion++;
-  console.log(thisQuestion);
 
   if (userAnswer == correctAnswer) {
     score++;
@@ -134,25 +132,28 @@ function highScores() {
   $winnersList.appendChild($label);
 
   // input field created
-  var $inputInitials = document.createElement("input");
-  $inputInitials.placeholder = "Your initials here";
-  $inputInitials.setAttribute("id", "initials");
-  $winnersList.appendChild($inputInitials);
+  var $inputName = document.createElement("input");
+  $inputName.placeholder = "Your name here";
+  $inputName.setAttribute("id", "name");
+  $winnersList.appendChild($inputName);
+
+  // will display the other high scores
 
   // event listener for input field
   $winnersList.addEventListener("submit", function (event) {
     event.preventDefault();
-    let userName = $inputInitials.value.trim();
-    $inputInitials.setAttribute("disabled", true);
+    let userName = $inputName.value.trim();
+    $inputName.setAttribute("disabled", true);
 
     if (userName.length === 0) {
       return;
     }
 
-    $inputInitials.value = "";
+    $inputName.value = "";
 
     // what will be shown when user submits info
     $choicesHere.textContent = "Top Scores";
+
     var $listName = document.createElement("li");
     $listName.textContent = userName + "'s score: " + score + "/10";
     $choicesHere.appendChild($listName);
@@ -161,7 +162,6 @@ function highScores() {
     scoreList.push([userName, score]);
     localStorage.setItem("scores", scoreList);
 
-    // will display the other high scores
     for (var i = 0; i < scoreList.length - 1; i++) {
       var $listName = document.createElement("li");
       localStorage.getItem("scores");
@@ -170,7 +170,6 @@ function highScores() {
       $listName.setAttribute("data-index", i);
       $choicesHere.appendChild($listName);
     }
-
     // scoreList array will only record latest 5 scores
     if (scoreList.length === 5) {
       scoreList.shift();
