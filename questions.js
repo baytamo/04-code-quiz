@@ -33,13 +33,44 @@ function setTime() {
     timeLeft--;
     $timer.textContent = timeLeft + " seconds left";
 
+    // if there are questions left when the timer reaches 0 or no correct answers, user will receive this notification
     if (
-      timeLeft === 0 ||
-      (randomQuestion.length === thisQuestion + 1 && timeLeft > 0)
+      (randomQuestion.length === thisQuestion && timeLeft > 0 && score === 0) ||
+      (timeLeft === 0 && score === 0)
     ) {
       clearInterval(gameClock);
       $timer.textContent = "";
       $score.textContent = "";
+      $choicesHere.innerHTML = "";
+      $questionHere.textContent = "You did not complete this quiz.";
+      // button created so that user may elect to take the quiz again
+      var $btn = document.createElement("button");
+      $btn.textContent = "Try again?";
+      $btn.setAttribute("id", "again");
+      $tryButton.appendChild($btn);
+      $tryButton.addEventListener("click", startGame);
+    }
+
+    // if user has answered correctly with time left, they will receive this notification
+    if (
+      (randomQuestion.length === thisQuestion && timeLeft > 0 && score > 0) ||
+      (score > 0 && timeLeft === 0)
+    ) {
+      clearInterval(gameClock);
+      $timer.textContent = "";
+      $score.textContent = "";
+      $choicesHere.innerHTML = "";
+      $questionHere.textContent =
+        "You've completed the quiz! Your final score is " + score + "/10.";
+
+      // button created so that user may elect to take the quiz again
+      var $btn = document.createElement("button");
+      $btn.setAttribute("id", "again");
+      $btn.textContent = "Try again?";
+      $tryButton.appendChild($btn);
+      document.getElementById("again").addEventListener("click", startGame);
+
+      highScores();
     }
   }, 1000);
 }
@@ -66,6 +97,7 @@ function showQuestion(question) {
   $score.textContent = "score: " + score + "/10";
   let choicesArray = questions[thisQuestion].choices;
   var correctAnswer = questions[thisQuestion].answer;
+  console.log(correctAnswer);
 
   // for loop to display each value in choices array, adds event listener for each index
   for (var i = 0; i < choicesArray.length; i++) {
@@ -73,38 +105,6 @@ function showQuestion(question) {
     $li.textContent = choicesArray[i];
     $li.addEventListener("click", checkAnswer);
     $choicesHere.appendChild($li);
-  }
-
-  // if there are questions left when the timer reaches 0 or no correct answers, user will receive this notification
-  if (
-    (randomQuestion.length > thisQuestion + 1 && timeLeft === 0) ||
-    (randomQuestion.length === thisQuestion + 1 && score === 0)
-  ) {
-    $choicesHere.innerHTML = "";
-    $questionHere.textContent = "You did not complete this quiz.";
-
-    // button created so that user may elect to take the quiz again
-    var $btn = document.createElement("button");
-    $btn.textContent = "Try again?";
-    $btn.setAttribute("id", "again");
-    $tryButton.appendChild($btn);
-    $tryButton.addEventListener("click", startGame);
-  }
-
-  // if user has answered correctly with time left, they will receive this notification
-  if (randomQuestion.length === thisQuestion + 1 && timeLeft > 0 && score > 0) {
-    $choicesHere.innerHTML = "";
-    $questionHere.textContent =
-      "You've completed the quiz! Your final score is " + score + "/10.";
-
-    // button created so that user may elect to take the quiz again
-    var $btn = document.createElement("button");
-    $btn.setAttribute("id", "again");
-    $btn.textContent = "Try again?";
-    $tryButton.appendChild($btn);
-    document.getElementById("again").addEventListener("click", startGame);
-
-    highScores();
   }
 }
 
@@ -114,6 +114,7 @@ function checkAnswer() {
   var userAnswer = userChoice.textContent;
   var correctAnswer = questions[thisQuestion].answer;
   thisQuestion++;
+  console.log(thisQuestion);
 
   if (userAnswer == correctAnswer) {
     score++;
@@ -159,21 +160,21 @@ function highScores() {
     // records user initials and score and pushes into array
     scoreList.push([userName, score]);
     localStorage.setItem("scores", scoreList);
-   
 
     // will display the other high scores
-    for (var i = 0; i < scoreList.length -1 ; i++) {
-      
+    for (var i = 0; i < scoreList.length - 1; i++) {
       var $listName = document.createElement("li");
-      $listName.textContent = scoreList[i][0] + "'s score: " + scoreList[i][1] + "/10";
       localStorage.getItem("scores");
+      $listName.textContent =
+        scoreList[i][0] + "'s score: " + scoreList[i][1] + "/10";
       $listName.setAttribute("data-index", i);
       $choicesHere.appendChild($listName);
     }
-    // scoreList array will only record latest 10 scores
+
+    // scoreList array will only record latest 5 scores
     if (scoreList.length === 5) {
       scoreList.shift();
-  }
+    }
   });
 }
 
