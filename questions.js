@@ -36,13 +36,13 @@ function setTime() {
     // if there are questions left when the timer reaches 0 or no correct answers, user will receive this notification
     if (
       (randomQuestion.length === thisQuestion && timeLeft > 0 && score === 0) ||
-      (timeLeft === 0 && score === 0)
+      (randomQuestion.length > thisQuestion && timeLeft <= 0 && score === 0)
     ) {
       clearInterval(gameClock);
       $timer.textContent = "";
       $score.textContent = "";
       $choicesHere.innerHTML = "";
-      $questionHere.textContent = "You did not complete this quiz.";
+      $questionHere.textContent = "You did not answer any questions correctly.";
       // button created so that user may elect to take the quiz again
       var $btn = document.createElement("button");
       $btn.textContent = "Try again?";
@@ -54,7 +54,7 @@ function setTime() {
     // if user has answered correctly with time left, they will receive this notification
     if (
       (randomQuestion.length === thisQuestion && timeLeft > 0 && score > 0) ||
-      (score > 0 && timeLeft === 0)
+      (score > 0 && timeLeft <= 0)
     ) {
       clearInterval(gameClock);
       $timer.textContent = "";
