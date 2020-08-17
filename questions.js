@@ -138,6 +138,17 @@ function highScores() {
   $winnersList.appendChild($inputName);
 
   // will display the other high scores
+  let newScoreList = JSON.parse(localStorage.getItem("scores"));
+  if (newScoreList !== null) {
+    scoreList = newScoreList;
+  }
+  for (var i = 0; i < scoreList.length; i++) {
+    var $listName = document.createElement("li");
+    $listName.textContent =
+      scoreList[i][0] + "'s score: " + scoreList[i][1] + "/10";
+    $listName.setAttribute("data-index", i);
+    $choicesHere.appendChild($listName);
+  }
 
   // event listener for input field
   $winnersList.addEventListener("submit", function (event) {
@@ -160,18 +171,20 @@ function highScores() {
 
     // records user initials and score and pushes into array
     scoreList.push([userName, score]);
-    localStorage.setItem("scores", scoreList);
+    localStorage.setItem("scores", JSON.stringify(scoreList));
 
+    // stored score list with user's new input will be shown
     for (var i = 0; i < scoreList.length - 1; i++) {
       var $listName = document.createElement("li");
-      localStorage.getItem("scores");
       $listName.textContent =
         scoreList[i][0] + "'s score: " + scoreList[i][1] + "/10";
       $listName.setAttribute("data-index", i);
       $choicesHere.appendChild($listName);
     }
+
     // scoreList array will only record latest 5 scores
-    if (scoreList.length === 5) {
+    if (newScoreList.length === 5) {
+      newScoreList.shift();
       scoreList.shift();
     }
   });
