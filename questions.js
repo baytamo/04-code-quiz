@@ -181,12 +181,6 @@ function highScores() {
       $listName.setAttribute("data-index", i);
       $choicesHere.appendChild($listName);
     }
-
-    // scoreList array will only record latest 5 scores
-    if (newScoreList.length === 5) {
-      newScoreList.shift();
-      scoreList.shift();
-    }
   });
 }
 
